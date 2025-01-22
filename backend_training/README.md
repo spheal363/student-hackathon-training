@@ -8,7 +8,7 @@
 -    **Docker Composeのインストール:** Docker Composeがインストールされていること。([https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/))
 -    **コードエディタ/IDEのインストール:** テキストエディタまたはIDE（例: VS Code）がインストールされていること。
 -    **プロジェクトファイル:** `docker-compose.yml`、`php/Dockerfile`、`php/src/`、および`nginx/default.conf`ファイルがあることを確認してください。
--    **プロジェクトへの移動:** ターミナルを開き、`cd todo-app`を使ってプロジェクトのルートディレクトリに移動してください。
+-    **プロジェクトへの移動:** ターミナルを開き、`cd backend_tranning/`を使ってプロジェクトのルートディレクトリに移動してください。
 
 ## 2. Docker Composeの設定
 
