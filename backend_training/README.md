@@ -34,7 +34,7 @@ erDiagram
     TODOS {
         INT id PK "Serial Primary Key"
         VARCHAR title "Title of the task (max 255 characters, not null)"
-        BOOLEAN completed "Task status (default false)"
+        ENUM status "Status of the task (active, completed, pending)"
     }
 ```
 ### 3.1.A. データベースクライアントで接続する場合
@@ -56,16 +56,18 @@ erDiagram
 CREATE TABLE todos (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    completed BOOLEAN DEFAULT FALSE
+    status ENUM('active', 'completed', 'pending') DEFAULT 'pending'
 );
 ```
 
 ### 3.3 データの挿入
 -    **SQLクエリの実行:** 以下のSQLクエリを実行して、`todos`テーブルにデータを挿入します。
 ```sql
-INSERT INTO todos (title, completed) VALUES ('Todo 1', FALSE);
-INSERT INTO todos (title, completed) VALUES ('Todo 2', TRUE);
-INSERT INTO todos (title, completed) VALUES ('Todo 3', FALSE);
+INSERT INTO todos (title, status) VALUES
+    ('Todo 1', 'pending'),
+    ('Todo 2', 'completed'),
+    ('Todo 3', 'pending'),
+    ('Todo 4', 'active');
 ```
 
 ### 3.4 データの確認
@@ -75,12 +77,13 @@ SELECT * FROM todos;
 ```
 以下のような結果が表示されると、OKです。
 ```bash
- id | title  | completed
-----+--------+-----------
-  1 | Todo 1 | f
-  2 | Todo 2 | t
-  3 | Todo 3 | f
-(3 rows)
+  id | title  | status
+-----+--------+---------
+   1 | Todo 1 | pending
+   2 | Todo 2 | completed
+   3 | Todo 3 | pending
+   4 | Todo 4 | active
+(4 rows)
 ```
 
 ## 4. PHP API の開発
@@ -95,6 +98,15 @@ SELECT * FROM todos;
 
     - **GET `/todos`（全てのTodoを取得）:**
         - 成功時: HTTPステータスコード`200`で全てのTodoをJSON形式で返します。Todoが存在しない場合、空の配列`[]`を返します。
+          - 例：<br> 
+            ```json
+            [
+                {"id": 1, "title": "Todo 1", "status": "pending"},
+                {"id": 2, "title": "Todo 2", "status": "completed"},
+                {"id": 3, "title": "Todo 3", "status": "pending"},
+                {"id": 4, "title": "Todo 4", "status": "active"}
+            ]
+            ``` 
         - エラー時: HTTPステータスコード`500`でエラーメッセージを`{"error": "エラーメッセージ"}`の形式で返します。
 
     - **GET `/todos?id={id}`（IDでTodoを取得）:**
