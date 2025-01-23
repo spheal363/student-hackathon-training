@@ -95,6 +95,26 @@ SELECT * FROM todos;
 
     - **GET `/todos`（全てのTodoを取得）:**
         - 成功時: HTTPステータスコード`200`で全てのTodoをJSON形式で返します。Todoが存在しない場合、空の配列`[]`を返します。
+          - 例：<br> 
+            ```json
+            [
+                {
+                    "id": 1,
+                    "title": "Todo 1",
+                    "completed": false
+                },
+                {
+                    "id": 2,
+                    "title": "Todo 2",
+                    "completed": true
+                },
+                {
+                    "id": 3,
+                    "title": "Todo 3",
+                    "completed": false
+                }
+            ]
+            ``` 
         - エラー時: HTTPステータスコード`500`でエラーメッセージを`{"error": "エラーメッセージ"}`の形式で返します。
 
     - **GET `/todos?id={id}`（IDでTodoを取得）:**
