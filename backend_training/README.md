@@ -60,24 +60,61 @@ CREATE TABLE todos (
 );
 ```
 
-## 4. PHP APIの開発
+### 3.3 データの挿入
+-    **SQLクエリの実行:** 以下のSQLクエリを実行して、`todos`テーブルにデータを挿入します。
+```sql
+INSERT INTO todos (title, completed) VALUES ('Todo 1', FALSE);
+INSERT INTO todos (title, completed) VALUES ('Todo 2', TRUE);
+INSERT INTO todos (title, completed) VALUES ('Todo 3', FALSE);
+```
 
--    **`config.php`の作成:** `php/src`ディレクトリにデータベース設定を含む`config.php`を作成します。
--    **`index.php`の作成:** `php/src`ディレクトリに`index.php`ファイルを作成します。
-    -    `/todos`エンドポイントへのさまざまなリクエストタイプ（GET、POST、PUT、DELETE）を処理するコード。
-    -    リクエストに応じて異なるレスポンスを処理するコード:
-        -    すべてのTodoを返す`GET /todos`エンドポイントを実装。
-             - データベースからすべてのTodoを取得し、JSON形式で返します。
-             - データベースから取得したTodoが空の場合は、空の配列`[]`を返します。
-             - データベースから取得したTodoがある場合は、JSON形式で返します。
-             - すべてのTodoが正常に返されることを確認します。
-        -    IDで特定のTodoを返す`GET /todos?id={id}`エンドポイントを実装。
-        -    新しいTodoを作成する`POST /todos`エンドポイントを実装。
-        -    Todoを更新する`PUT /todos?id={id}`エンドポイントを実装。
-        -    IDでTodoを削除する`DELETE /todos?id={id}`エンドポイントを実装。
-        -    APIが`Content-Type: application/json`ヘッダーを使ってJSONデータを出力することを確認します。
-        -   各APIエンドポイントに適したエラー状態コードを返すエラー処理を実装します。
--    **`app`サービスの再起動:** `docker-compose restart app`を使って`app`サービスを再起動します。
+### 3.4 データの確認
+-    **SQLクエリの実行:** 以下のSQLクエリを実行して、`todos`テーブルのデータを確認します。ステップ3.3で挿入したデータが表示されることを確認してください。
+```sql
+SELECT * FROM todos;
+```
+
+## 4. PHP API の開発
+
+1. **`config.php`の作成:**  
+   `php/src`ディレクトリに、データベース接続設定を含む`config.php`ファイルを作成します。
+
+2. **`index.php`の作成:**  
+   同じディレクトリに`index.php`ファイルを作成し、`/todos`エンドポイントを実装します。 
+   <br>全てのコードを`index.php`に書く必要はありません。任意のファイルを作成して、コードを分割することができます。
+   <br><br>以下の機能を追加してください：
+
+    - **GET `/todos`（全てのTodoを取得）:**
+        - 成功時: HTTPステータスコード`200`で全てのTodoをJSON形式で返します。Todoが存在しない場合、空の配列`[]`を返します。
+        - エラー時: HTTPステータスコード`500`でエラーメッセージを`{"error": "エラーメッセージ"}`の形式で返します。
+
+    - **GET `/todos?id={id}`（IDでTodoを取得）:**
+        - 成功時: HTTPステータスコード`200`で指定されたIDのTodoをJSON形式で返します。Todoが存在しない場合、空のオブジェクト`{}`を返します。
+        - IDが見つからない場合: HTTPステータスコード`404`でエラーメッセージ`{"error": "Todoが見つかりません"}`を返します。
+        - エラー時: HTTPステータスコード`500`でエラーメッセージを返します。
+
+    - **POST `/todos`（新しいTodoを作成）:**
+        - リクエストボディとして`{"title": "Todoのタイトル"}`のJSONを受け付けます。
+        - 成功時: HTTPステータスコード`201`で作成されたTodoをJSON形式で返します。
+        - エラー時: HTTPステータスコード`500`でエラーメッセージを返します。
+
+    - **PUT `/todos?id={id}`（IDでTodoを更新）:**
+        - リクエストボディで`title`または`completed`ステータスを更新します。
+        - 成功時: HTTPステータスコード`200`で更新されたTodoをJSON形式で返します。
+        - IDが見つからない場合: HTTPステータスコード`404`でエラーメッセージを返します。
+        - エラー時: HTTPステータスコード`500`でエラーメッセージを返します。
+
+    - **DELETE `/todos?id={id}`（IDでTodoを削除）:**
+        - 成功時: HTTPステータスコード`200`で削除されたTodoをJSON形式で返します。
+        - IDが見つからない場合: HTTPステータスコード`404`でエラーメッセージを返します。
+        - エラー時: HTTPステータスコード`500`でエラーメッセージを返します。
+
+3. **アプリコンテナの再起動:**  
+   エンドポイントを実装した後、以下のコマンドを実行してアプリコンテナを再起動します：
+   ```bash
+   docker compose restart app
+    ```
+
 
 ## 5. APIのテスト
 
