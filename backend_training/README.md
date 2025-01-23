@@ -69,9 +69,18 @@ INSERT INTO todos (title, completed) VALUES ('Todo 3', FALSE);
 ```
 
 ### 3.4 データの確認
--    **SQLクエリの実行:** 以下のSQLクエリを実行して、`todos`テーブルのデータを確認します。ステップ3.3で挿入したデータが表示されることを確認してください。
+**SQLクエリの実行:** 以下のSQLクエリを実行して、`todos`テーブルのデータを確認します。ステップ3.3で挿入したデータが表示されることを確認してください。
 ```sql
 SELECT * FROM todos;
+```
+以下のような結果が表示されると、OKです。
+```bash
+ id | title  | completed
+----+--------+-----------
+  1 | Todo 1 | f
+  2 | Todo 2 | t
+  3 | Todo 3 | f
+(3 rows)
 ```
 
 ## 4. PHP API の開発
