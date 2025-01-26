@@ -69,9 +69,17 @@ erDiagram
 - リレーション: todos の status_id は、statuses の id を参照します (外部キー制約)。
 
 <details>
-  <summary>(CREATE SQL</summary>
+  <summary>CREATE SQL</summary>
 
 以下のSQLクエリを使用して、statuses と todos の2つのテーブルを作成してください。
+<br/>`statuses`テーブルの作成：
+```sql
+CREATE TABLE statuses (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+```
+
 <br />`todos`テーブルの作成：
 ```sql
 CREATE TABLE todos (
@@ -80,14 +88,7 @@ CREATE TABLE todos (
     status_id INT NOT NULL REFERENCES statuses(id)
 );
 ```
-    
-<br/>`statuses`テーブルの作成：
-```sql
-CREATE TABLE statuses (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
-);
-```
+
 </details>
 
 ### 3.3 データの挿入
@@ -98,7 +99,7 @@ INSERT INTO statuses (name) VALUES
     ('completed'),
     ('active');
 ```
--    **SQLクエリの実行:** 以下のSQLクエリを実行して、`todos`テーブルにデータを挿入します。
+-    **事前タスクの挿入:** 以下のSQLクエリを実行して、`todos`テーブルにデータを挿入します。
 ```sql
 INSERT INTO todos (title, status_id) VALUES
     ('Todo 1', 1),
@@ -137,12 +138,16 @@ SELECT * FROM todos;
         - 成功時: HTTPステータスコード`200`で全てのTodoをJSON形式で返します。Todoが存在しない場合、空の配列`[]`を返します。
           - 例：<br> 
             ```json
-            [
-                {"id": 1, "title": "Todo 1", "status": "pending"},
-                {"id": 2, "title": "Todo 2", "status": "completed"},
-                {"id": 3, "title": "Todo 3", "status": "pending"},
-                {"id": 4, "title": "Todo 4", "status": "active"}
-            ]
+            {
+                "status": "ok", 
+                "data": [
+                    {"id": 1, "title": "Todo 1", "status": "pending"},
+                    {"id": 2, "title": "Todo 2", "status": "completed"},
+                    {"id": 3, "title": "Todo 3", "status": "pending"},
+                    {"id": 4, "title": "Todo 4", "status": "active"}
+                ]        
+            }
+            
             ``` 
         - エラー時: HTTPステータスコード`500`でエラーメッセージを`{"error": "エラーメッセージ"}`の形式で返します。
 

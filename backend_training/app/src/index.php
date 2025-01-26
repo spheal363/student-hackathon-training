@@ -33,6 +33,27 @@ function handleHealthCheck(PDO $pdo): void
     exit;
 }
 
+function handleGetTodoList(PDO $pdo): void
+{
+    try {
+        // データベースからTodoリストを取得
+        $stmt = $pdo->query("SELECT * FROM todos ORDER BY id DESC");
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // レスポンスを返却
+        echo json_encode(['status' => 'ok', 'todos' => $result]);
+    } catch (Exception $e) {
+        // クエリエラー時のレスポンス
+        http_response_code(500);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Todoリストの取得に失敗しました',
+            'error' => $e->getMessage()
+        ]);
+    }
+    exit;
+}
+
 // ルーティングロジック
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
@@ -42,6 +63,11 @@ global $pdo;
 switch ($requestUri) {
     case '/health':
         handleHealthCheck($pdo); // config.php の $pdo を関数に渡します
+        break;
+
+    case '/todos':
+        // Todoリストの取得処理
+        handleGetTodoList($pdo);
         break;
 
     default:
