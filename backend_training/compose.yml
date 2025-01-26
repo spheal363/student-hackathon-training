@@ -8,7 +8,7 @@ services:
       PGUSER: prtimes
       POSTGRES_USER: prtimes
       POSTGRES_PASSWORD: 2025winter
-      POSTGRES_DB: hackathon2025winter
+      POSTGRES_DB: 2025winterhackathon
     volumes:
       - db_data:/var/lib/postgresql/data # 名前付きボリューム `db_data` をコンテナのデータディレクトリにマウントします。これにより、コンテナが停止または削除されてもデータが保持されます。
     healthcheck:
@@ -28,7 +28,7 @@ services:
       PGUSER: prtimes
       DB_USERNAME: prtimes
       DB_PASSWORD: 2025winter
-      DB_DATABASE: hackathon2025winter
+      DB_DATABASE: 2025winterhackathon
       TZ: Japan
     depends_on:
       db:
