@@ -1,37 +1,52 @@
 <?php
-header('Content-Type: application/json');
+require_once 'config.php'; // 設定ファイルを読み込み
 
-// Environment variables for database connection
-$db_host = getenv('DB_HOST') ?: 'db';
-$db_port = getenv('DB_PORT') ?: '5432';
-$db_name = getenv('DB_DATABASE') ?: 'prtimes';
-$db_user = getenv('DB_USERNAME') ?: 'prtimes';
-$db_pass = getenv('DB_PASSWORD') ?: 'prtimes';
+/**
+ * `/health` エンドポイントを処理します。
+ *
+ * @param PDO $pdo データベース接続のためのPDOインスタンス
+ * @return void
+ */
+function handleHealthCheck(PDO $pdo): void
+{
+    try {
+        // データベース接続を確認
+        $stmt = $pdo->query("SELECT 1");
+        $result = $stmt->fetchColumn();
 
-// PDO connection
-try {
-    $pdo = new PDO("pgsql:host=$db_host;port=$db_port;dbname=$db_name", $db_user, $db_pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'Database connection failed', 'error' => $e->getMessage()]);
+        if ($result == 1) {
+            // データベース接続が正常の場合のレスポンス
+            echo json_encode(['status' => 'ok', 'database' => 'connected']);
+        } else {
+            // データベース応答なしの場合のエラーレスポンス
+            throw new RuntimeException('データベースが応答していません');
+        }
+    } catch (Exception $e) {
+        // クエリエラー時のレスポンス
+        http_response_code(500);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'ヘルスチェックに失敗しました',
+            'error' => $e->getMessage()
+        ]);
+    }
     exit;
 }
 
-// Handle health check route
-if ($_SERVER['REQUEST_URI'] === '/health') {
-    try {
-        $stmt = $pdo->query("SELECT 1");
-        $result = $stmt->fetchColumn();
-        if ($result == 1) {
-            echo json_encode(['status' => 'ok', 'database' => 'connected']);
-        } else {
-            http_response_code(500);
-            echo json_encode(['status' => 'error', 'message' => 'Database not responding']);
-        }
-    } catch (PDOException $e) {
-        http_response_code(500);
-        echo json_encode(['status' => 'error', 'message' => 'Query failed', 'error' => $e->getMessage()]);
-    }
-    exit;
+// ルーティングロジック
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// グローバル変数 $pdo を使用
+global $pdo;
+
+switch ($requestUri) {
+    case '/health':
+        handleHealthCheck($pdo); // config.php の $pdo を関数に渡します
+        break;
+
+    default:
+        // 不明なエンドポイントの場合の404レスポンス
+        http_response_code(404);
+        echo json_encode(['status' => 'error', 'message' => 'エンドポイントが見つかりません']);
+        break;
 }
