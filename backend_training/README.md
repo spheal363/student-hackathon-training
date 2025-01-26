@@ -88,6 +88,7 @@ CREATE TABLE statuses (
     name VARCHAR(255) NOT NULL
 );
 ```
+</details>
 
 ### 3.3 データの挿入
 -    **ステータスの挿入:** 以下のSQLクエリを実行して、`statuses`テーブルにデータを挿入します。
