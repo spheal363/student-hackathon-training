@@ -6,6 +6,12 @@ backend trainingの目標は以下の通りです。
 - APIエンドポイントを作成し、データベースとのやり取りを行う。 
 - APIエンドポイントをテストし、データベースとの通信を確認する。
 
+TODOリストアプリのバックエンドは以下の仕様に従います：
+- `todos`テーブルを作成し、タスクのID、タイトル、ステータスを格納します。
+- タスクのステータスは`active`、`completed`、`pending`のいずれかです。
+- APIエンドポイントを作成し、タスクのリストを取得、作成、更新、削除できるようにします。
+
+## 1. 環境設定
 構成図：
 ```mermaid
 graph LR
@@ -13,9 +19,6 @@ graph LR
     A <-- データベース操作 --> B[PostgreSQL]
     A -- 応答 --> N
 ```
-
-## 1. 環境設定
-
 -    **Dockerのインストール:** Dockerがインストールされ、実行されていること。([https://www.docker.com/get-started/](https://www.docker.com/get-started/))
 -    **Docker Composeのインストール:** Docker Composeがインストールされていること。([https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/))
 -    **コードエディタ/IDEのインストール:** テキストエディタまたはIDE（例: VS Code）がインストールされていること。
@@ -28,46 +31,81 @@ graph LR
 - `docker ps`またはDocker Desktopを使って、コンテナが実行中であることを確認します。
 
 ## 3. データベースの設定
-- 
-```mermaid
-erDiagram
-    TODOS {
-        INT id PK "Serial Primary Key"
-        VARCHAR title "Title of the task (max 255 characters, not null)"
-        ENUM status "Status of the task (active, completed, pending)"
-    }
-```
 ### 3.1.A. データベースクライアントで接続する場合
 -    **データベースクライアント:** PostgreSQLデータベースクライアント（`pgAdmin`、`DBeaver`など）がインストールされていること。
 -    **データベースへの接続:** `compose.yml`ファイルにある以下の接続情報を使って、PostgreSQLデータベースに正常に接続します。
       ```sql
-        DATABASE: prtimes
+        DATABASE: 2025winterhackathon
         PORT: 5432
         USERNAME: prtimes
-        PASSWORD: prtimes
+        PASSWORD: 2025winter
       ```
 ### 3.1.B. dockerコンテナ内で接続する場合
 -    **`app`コンテナに接続:** `docker exec -it app bash`を使って`app`コンテナに接続します。
--   **`psql`コマンド:** `psql -U prtimes -d prtimes`を使って、PostgreSQLデータベースに接続します。
+-   **`psql`コマンド:** `psql -U prtimes -d 2025winterhackathon`を使って、PostgreSQLデータベースに接続します。
 
 ### 3.2 テーブルの作成
--    **SQLクエリの実行:** 以下のSQLクエリを実行して、`todos`テーブルを作成します。
+TODOリストアプリのデータベーススキーマを設計し、必要なテーブルを作成します。 以下のデータベース設計をもとに、todos テーブルと statuses テーブルを作成してください。
+
+#### ER図 (データベース設計)
+以下の ER図は、todos テーブルと statuses テーブルの関係を表しています。各 todo 項目には、status (状態) が関連付けられます。
+<br />PostgreSQLに作成するテーブルの構造を以下の ER図を参考に作成してください。
+```mermaid
+erDiagram
+    todos {
+        int id
+        varchar title
+        int status_id
+    }
+    statuses {
+        int id
+        varchar name
+    }
+    todos }o--|| statuses : "has status"
+```
+
+- todos テーブル: TODOリストの項目を管理します。
+- statuses テーブル: 各TODO項目の状態（例: "未完了", "進行中", "完了"）を管理します。
+- リレーション: todos の status_id は、statuses の id を参照します (外部キー制約)。
+
+<details>
+  <summary>CREATE SQL</summary>
+
+以下のSQLクエリを使用して、statuses と todos の2つのテーブルを作成してください。
+<br/>`statuses`テーブルの作成：
+```sql
+CREATE TABLE statuses (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+```
+
+<br />`todos`テーブルの作成：
 ```sql
 CREATE TABLE todos (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    status ENUM('active', 'completed', 'pending') DEFAULT 'pending'
+    status_id INT NOT NULL REFERENCES statuses(id)
 );
 ```
 
+</details>
+
 ### 3.3 データの挿入
--    **SQLクエリの実行:** 以下のSQLクエリを実行して、`todos`テーブルにデータを挿入します。
+-    **ステータスの挿入:** 以下のSQLクエリを実行して、`statuses`テーブルにデータを挿入します。
 ```sql
-INSERT INTO todos (title, status) VALUES
-    ('Todo 1', 'pending'),
-    ('Todo 2', 'completed'),
-    ('Todo 3', 'pending'),
-    ('Todo 4', 'active');
+INSERT INTO statuses (name) VALUES
+    ('pending'),
+    ('completed'),
+    ('active');
+```
+-    **事前タスクの挿入:** 以下のSQLクエリを実行して、`todos`テーブルにデータを挿入します。
+```sql
+INSERT INTO todos (title, status_id) VALUES
+    ('Todo 1', 1),
+    ('Todo 2', 2),
+    ('Todo 3', 1),
+    ('Todo 4', 3);
 ```
 
 ### 3.4 データの確認
@@ -100,12 +138,16 @@ SELECT * FROM todos;
         - 成功時: HTTPステータスコード`200`で全てのTodoをJSON形式で返します。Todoが存在しない場合、空の配列`[]`を返します。
           - 例：<br> 
             ```json
-            [
-                {"id": 1, "title": "Todo 1", "status": "pending"},
-                {"id": 2, "title": "Todo 2", "status": "completed"},
-                {"id": 3, "title": "Todo 3", "status": "pending"},
-                {"id": 4, "title": "Todo 4", "status": "active"}
-            ]
+            {
+                "status": "ok", 
+                "data": [
+                    {"id": 1, "title": "Todo 1", "status": "pending"},
+                    {"id": 2, "title": "Todo 2", "status": "completed"},
+                    {"id": 3, "title": "Todo 3", "status": "pending"},
+                    {"id": 4, "title": "Todo 4", "status": "active"}
+                ]        
+            }
+            
             ``` 
         - エラー時: HTTPステータスコード`500`でエラーメッセージを`{"error": "エラーメッセージ"}`の形式で返します。
 
