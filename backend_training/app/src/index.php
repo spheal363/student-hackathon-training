@@ -6,13 +6,16 @@ require_once 'config.php'; // 設定ファイルを読み込み
 header("Content-Type: application/json");
 
 $method = $_SERVER['REQUEST_METHOD'];
-$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
+// Strip out query parameters by getting only the path
+$requestUri = $_SERVER['REQUEST_URI']; // This strips out the query string
+
+// Now $requestUri will only have the path, and no query parameters
 global $pdo;
 
 $routes = [
     'GET' => [
-        '#^/todos$#' => 'handleGetTodos',
+        '#^/todos$#' => 'handleGetTodos',  // Match only `/todos` with no query params or other path
         '#^/health$#' => 'handleHealthCheck',
         // TODO: 他のエンドポイントを追加
     ],
@@ -38,7 +41,7 @@ if (isset($routes[$method])) {
 }
 
 http_response_code(404);
-echo json_encode(['error' => 'エンドポイントが見つかりません']);
+echo json_encode(['error' => 'Not Found']);
 exit;
 
 /**
@@ -59,14 +62,14 @@ function handleHealthCheck(PDO $pdo): void
             echo json_encode(['status' => 'ok', 'database' => 'connected']);
         } else {
             // データベース応答なしの場合のエラーレスポンス
-            throw new RuntimeException('データベースが応答していません');
+            throw new RuntimeException('Database connection failed');
         }
     } catch (Exception $e) {
         // クエリエラー時のレスポンス
         http_response_code(500);
         echo json_encode([
             'status' => 'error',
-            'message' => 'ヘルスチェックに失敗しました',
+            'message' => 'Database connection failed',
             'error' => $e->getMessage()
         ]);
     }
@@ -93,7 +96,7 @@ function handleGetTodos(PDO $pdo): void
         http_response_code(500);
         echo json_encode([
             'status' => 'error',
-            'message' => 'Todoリストの取得に失敗しました',
+            'message' => 'Failed to get todos',
             'error' => $e->getMessage()
         ]);
     }

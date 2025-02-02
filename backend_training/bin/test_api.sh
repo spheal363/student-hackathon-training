@@ -29,10 +29,10 @@ test_get_all_todos() {
     echo ""  # New line after test case
 }
 
-# Function to test GET /todos?id=1 (Retrieve Todo by ID)
+# Function to test GET /todos/1 (Retrieve Todo by ID)
 test_get_todo_by_id() {
-    echo "Testing GET /todos?id=1 (Retrieve Todo by ID)"
-    response=$(curl -s -w "\n%{http_code}" "$BASE_URL?id=1")
+    echo "Testing GET /todos/1 (Retrieve Todo by ID)"
+    response=$(curl -s -w "\n%{http_code}" "$BASE_URL/1")
     status_code=$(echo "$response" | tail -n1)
     body=$(echo "$response" | sed '$d')  # This removes the last line (the status code)
 
@@ -46,10 +46,10 @@ test_get_todo_by_id() {
     echo ""  # New line after test case
 }
 
-# Function to test GET /todos?id=9999 (Not Found)
+# Function to test GET /todos/9999 (Not Found)
 test_get_todo_not_found() {
-    echo "Testing GET /todos?id=9999 (Not Found)"
-    response=$(curl -s -w "\n%{http_code}" "$BASE_URL?id=9999")
+    echo "Testing GET /todos/9999 (Not Found)"
+    response=$(curl -s -w "\n%{http_code}" "$BASE_URL/9999")
     status_code=$(echo "$response" | tail -n1)
     body=$(echo "$response" | sed '$d')  # This removes the last line (the status code)
 
@@ -134,17 +134,17 @@ test_get_server_error() {
 # Function to display menu and execute selected test case
 menu() {
     PS3="Please select a test case to run: "
-    options=("Test GET /todos" "Test GET /todos?id=1" "Test GET /todos?id=9999" "Test POST /todos" "Test PUT /todos?id=1" "Test DELETE /todos?id=1" "Test GET /todos/cause-error" "Run All Tests" "Exit")
+    options=("Test GET /todos" "Test GET /todos/1" "Test GET /todos?id=9999" "Test POST /todos" "Test PUT/todos?id=1" "Test DELETE /todos?id=1" "Test GET /todos/cause-error" "Run All Tests" "Exit")
     select opt in "${options[@]}"
     do
         case $opt in
             "Test GET /todos")
                 test_get_all_todos
                 ;;
-            "Test GET /todos?id=1")
+            "Test GET /todos/1")
                 test_get_todo_by_id
                 ;;
-            "Test GET /todos?id=9999")
+            "Test GET /todos/9999 Not Found")
                 test_get_todo_not_found
                 ;;
             "Test POST /todos")
