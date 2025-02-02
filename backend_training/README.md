@@ -1,15 +1,13 @@
 ## 0. 課題説明
-TODO リストアプリを作成するためのバックエンド開発トレーニングを開始します。このトレーニングでは、PHPとPostgreSQLを使用して、RESTful APIを作成し、データベースとのやり取りを行います。このトレーニングを完了すると、PHPを使用してデータベースと通信する方法を学び、APIエンドポイントを作成する方法を理解することができます。
-backend trainingの目標は以下の通りです。
+このTODOリストアプリバックエンド開発トレーニングでは、PHPとPostgreSQLを使用して、TODOリストアプリのバックエンドを開発する方法を学びます。主にRESTful APIを作成し、データベースとのやり取りを行います。
+このトレーニングを通じて、次のスキルを習得できます：
 - PHPを使用してRESTful APIを作成する。
-- PostgreSQLデータベースとの通信を設定する。
-- APIエンドポイントを作成し、データベースとのやり取りを行う。 
-- APIエンドポイントをテストし、データベースとの通信を確認する。
+- PostgreSQLデータベースとの通信を設定し、データの操作を行う。
+- APIエンドポイントの作成方法を学び、データベースとの通信を実現する。 
 
-TODOリストアプリのバックエンドは以下の仕様に従います：
-- `todos`テーブルを作成し、タスクのID、タイトル、ステータスを格納します。
-- タスクのステータスは`active`、`completed`、`pending`のいずれかです。
-- APIエンドポイントを作成し、タスクのリストを取得、作成、更新、削除できるようにします。
+トレーニングが完了すると、以下のようなAPIエンドポイントを作成できるようになります：
+- タスクのリストを取得、作成、更新、削除する機能
+- 各タスクの状態（`active`、`completed`、`pending`）を管理するAPI
 
 ## 1. 環境設定
 構成図：
@@ -27,8 +25,16 @@ graph LR
 
 ## 2. Docker Composeの設定
 
--    **Dockerコンテナの起動:** `docker-compose up -d`コマンドを実行してコンテナを起動します。 
-- `docker ps`またはDocker Desktopを使って、コンテナが実行中であることを確認します。
+-    **Dockerコンテナの起動:** `docker compose up -d`コマンドを実行してコンテナを起動します。 
+- `docker ps`またはDocker Desktopを使って、以下のコンテナが正常に起動していることを確認してください：
+```bash
+docker compose ps
+NAME             IMAGE                  COMMAND                  SERVICE   CREATED      STATUS                  PORTS
+2025winter-app   backend_training-app   "docker-php-entrypoi…"   app       7 days ago   Up 25 hours             0.0.0.0:9000->9000/tcp
+2025winter-db    postgres:latest        "docker-entrypoint.s…"   db        7 days ago   Up 25 hours (healthy)   0.0.0.0:5432->5432/tcp
+2025winter-web   nginx:latest           "/docker-entrypoint.…"   web       7 days ago   Up 25 hours             0.0.0.0:80->80/tcp
+```
+**TIPS:** コンテナが正常に起動していない場合、`docker compose logs <(任意)container-name>`を使用してログを確認してください。
 
 ## 3. データベースの設定
 ### 3.1.A. データベースクライアントで接続する場合
@@ -131,7 +137,7 @@ SELECT * FROM todos;
 
 2. **`index.php`の作成:**  
    同じディレクトリに`index.php`ファイルを作成し、`/todos`エンドポイントを実装します。 
-   <br>全てのコードを`index.php`に書く必要はありません。任意のファイルを作成して、コードを分割することができます。
+   <br>PIエンドポイントの実装には、すべてのコードを1つのファイルに書く必要はありません。できるだけコードをモジュール化し、各機能を異なるファイルに分けて実装することをお勧めします（例えば、TodoクラスやDatabaseクラスなど）。
    <br><br>以下の機能を追加してください：
 
     - **GET `/todos`（全てのTodoを取得）:**
@@ -180,25 +186,71 @@ SELECT * FROM todos;
 
 ## 5. APIのテスト
 
--    **APIクライアント:** APIクライアント（Postman、Insomniaなど）がインストールされていること。
--    **GET /todos (リスト):** `GET`メソッドを使用して`http://localhost/todos`をテストし、空の配列`[]`が返されることを確認します。
--    **POST /todos (作成):** `POST`メソッドを使用して`http://localhost/todos`をテストし、`{"title": "テストTodo"}`のようなJSONボディを提供します。
-    -    新しいアイテムが正しいタイトルでデータベースに作成されたことを確認します。
--    **GET /todos?id={id} (取得):** `GET`メソッドを使用して`http://localhost/todos?id={id}`をテストし、`{id}`を作成済みの`id`に置き換えます。
-    -    正しいレコードが返されることを確認します。
--    **PUT /todos?id={id} (更新):** `PUT`メソッドを使用して`http://localhost/todos?id={id}`をテストし、`{id}`を作成済みのidに置き換えます。`title`または`completed`ステータスを更新します。
-    -    レコードが正しく更新されることを確認します。
--    **DELETE /todos?id={id} (削除):** `DELETE`メソッドを使用して`http://localhost/todos?id={id}`をテストし、`{id}`を作成済みの`id`に置き換えます。
-    -    レコードが正しく削除されることを確認します。
+### BashスクリプトでのAPIテスト
+
+テストを簡単に行いたい場合、以下のBashスクリプトを使用して、APIエンドポイントを自動的にテストできます。このスクリプトでは、各APIエンドポイントを呼び出して、結果が期待通りかを確認します。
+
+**Bashスクリプトの使用方法:**
+1. スクリプトをダウンロードまたは作成し、`test_api.sh`という名前で保存します。
+2. 以下のコマンドで実行します：
+   ```bash
+   bash test_api.sh
+    ```
+3. スクリプトが実行されると、各APIエンドポイントのテスト結果が表示されます。
+テストのオプションは、個別のエンドポイントを選択して実行するか、「Run All Tests」を選んで全てのテストを一度に実行できます。
+   ```bash
+   bash bin/test_api.sh
+   1) Test GET /todos              6) Test DELETE /todos?id=1
+   2) Test GET /todos?id=1         7) Test GET /todos/cause-error
+   3) Test GET /todos?id=9999      8) Run All Tests
+   4) Test POST /todos             9) Exit
+   5) Test PUT /todos?id=1
+   ```
+4. テスト実行の確認: スクリプトが正しく実行されると、各APIエンドポイントの結果がターミナルに表示されます。成功した場合は「✅ Passed」と表示され、失敗した場合は「❌ Failed」と表示されます。
+   ```bash
+    Testing GET /todos (Retrieve all Todos)
+    ✅ Passed
+    Response: {"status":"ok","todos":[{"id":4,"title":"Todo 4","status_id":3},{"id":3,"title":"Todo 3","status_id":1},{"id":2,"title":"Todo 2","status_id":2},{"id":1,"title":"Todo 1","status_id":1}]}
+   ```
+
+### 手動でのAPIテスト方法
+
+1. **GET /todos (リストの取得):**
+    - `GET`メソッドを使用して `http://localhost/todos` をリクエストし、空の配列 `[]` が返されることを確認します。これは、まだタスクがデータベースに存在しない場合に期待されるレスポンスです。
+
+2. **POST /todos (新しいTodoの作成):**
+    - `POST`メソッドを使用して `http://localhost/todos` にリクエストを送り、以下のようなJSONボディを提供します:
+      ```json
+      {"title": "テストTodo"}
+      ```
+    - 新しいTodoがデータベースに正しく作成され、タイトルが期待通りであることを確認します。
+
+3. **GET /todos?id={id} (特定のTodoを取得):**
+    - `GET`メソッドを使用して `http://localhost/todos?id={id}` にリクエストを送り、`{id}` を作成したTodoのIDに置き換えます。
+    - レスポンスとして、正しいTodoレコードが返されることを確認します。
+
+4. **PUT /todos?id={id} (Todoの更新):**
+    - `PUT`メソッドを使用して `http://localhost/todos?id={id}` にリクエストを送り、`{id}` を既存のTodo IDに置き換えます。
+    - リクエストボディで `title` や `status`（例: "completed"）を更新し、レスポンスとして更新されたTodoが返されることを確認します。
+
+5. **DELETE /todos?id={id} (Todoの削除):**
+    - `DELETE`メソッドを使用して `http://localhost/todos?id={id}` にリクエストを送り、`{id}` を削除したいTodoのIDに置き換えます。
+    - レスポンスとして削除されたTodoが返され、データベースからそのTodoが削除されていることを確認します。
+
+<br>上記のAPIリクエストは、**Postman**や**Insomnia**などのAPIクライアントを使用して手動で送信できます。これらのツールを使えば、リクエストヘッダやボディをカスタマイズして、より柔軟にAPI
+をテストできます。  
+APIクライアントを使用すると、リクエストとレスポンスを可視化し、デバッグも簡単に行えます。どのAPIクライアントでも、必要に応じてリクエストを作成し、APIの動作を確認できます。
+
 
 ## 6. 開発と反復
 
 -    **PHPコードの変更:** `php/src`ディレクトリ内のファイルを編集します。
--    **コンテナの再起動:** `docker-compose restart app`を使用して、PHPコードを変更した後にコンテナを再起動します。
+-    **コンテナの再起動:** `docker compose restart app`を使用して、PHPコードを変更した後にコンテナを再起動します。
 -    **APIの再テスト:** 変更ごとにAPIクライアントを使用してエンドポイントを再テストします。
 
 ## 7. クリーンアップ
--    **コンテナの停止:** `docker-compose stop`コマンドを実行してコンテナを停止します。
+-   **コンテナの停止:** `docker compose stop`コマンドを実行してコンテナを停止します。
+-   **コンテナの削除:** `docker compose down -v`コマンドを実行してコンテナを削除します。
 
 ## おめでとうございます！
 
