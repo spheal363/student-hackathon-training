@@ -208,9 +208,15 @@ SELECT * FROM todos;
    ```
 4. テスト実行の確認: スクリプトが正しく実行されると、各APIエンドポイントの結果がターミナルに表示されます。成功した場合は「✅ Passed」と表示され、失敗した場合は「❌ Failed」と表示されます。
    ```bash
-    Testing GET /todos (Retrieve all Todos)
-    ✅ Passed
-    Response: {"status":"ok","todos":[{"id":4,"title":"Todo 4","status_id":3},{"id":3,"title":"Todo 3","status_id":1},{"id":2,"title":"Todo 2","status_id":2},{"id":1,"title":"Todo 1","status_id":1}]}
+     Testing GET /todos (Retrieve all Todos)
+     ✅ Passed
+     Response: {"status":"ok","todos":[{"id":4,"title":"Todo 4","status_id":3},{"id":3,"title":"Todo 3","status_id":1},{"id":2,"title":"Todo 2","status_id":2},{"id":1,"title":"Todo 1","status_id":1}]}
+   ```
+   
+   ```bash
+     Testing GET /todos?id=1 (Retrieve Todo by ID)
+     ❌ Failed
+     Response: {"status":"ok","todos":[{"id":4,"title":"Todo 4","status_id":3},{"id":3,"title":"Todo 3","status_id":1},{"id":2,"title":"Todo 2","status_id":2},{"id":1,"title":"Todo 1","status_id":1}]}
    ```
 
 ### 手動でのAPIテスト方法
