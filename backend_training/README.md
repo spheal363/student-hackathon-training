@@ -17,11 +17,16 @@ graph LR
     A <-- データベース操作 --> B[PostgreSQL]
     A -- 応答 --> N
 ```
--    **Dockerのインストール:** Dockerがインストールされ、実行されていること。([https://www.docker.com/get-started/](https://www.docker.com/get-started/))
--    **Docker Composeのインストール:** Docker Composeがインストールされていること。([https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/))
--    **コードエディタ/IDEのインストール:** テキストエディタまたはIDE（例: VS Code）がインストールされていること。
--    **プロジェクトへの移動:** ターミナルを開き、`cd backend_tranning/`を使ってプロジェクトのルートディレクトリに移動してください。
--    **プロジェクトファイル:** `compose.yml`、`app/Dockerfile`、`app/src/`、および`nginx/default.conf`ファイルがあることを確認してください。
+
+0. **(Mac/Linuxユーザーはスキップ) Windowsユーザー向けのWSL2追加設定 :** Windows Subsystem for Linux 2 (WSL2)を有効にしてください。([WSL2の有効化]
+(https://docs.microsoft.com/en-us/windows/wsl/install). 参考：[Docker Desktop for Windows with WSL2](https://docs.docker.com/desktop/windows/wsl/))
+1. **Dockerのインストール:** Dockerがインストールされ、実行されていること。([https://www.docker.com/get-started/](https://www.docker.
+   com/get-started/))
+2. **Docker Composeのインストール:** Docker Composeがインストールされていること。([https://docs.docker.com/compose/install/](https://docs.
+   docker.com/compose/install/))
+3. **コードエディタ/IDEのインストール:** テキストエディタまたはIDE（例: VS Code）がインストールされていること。
+4. **プロジェクトへの移動:** ターミナルを開き、`cd backend_tranning/`を使ってプロジェクトのルートディレクトリに移動してください。
+5. **プロジェクトファイル:** `compose.yml`、`app/Dockerfile`、`app/src/`、および`nginx/default.conf`ファイルがあることを確認してください。
 
 ## 2. Docker Composeの設定
 
@@ -191,6 +196,10 @@ SELECT * FROM todos;
 テストを簡単に行いたい場合、以下のBashスクリプトを使用して、APIエンドポイントを自動的にテストできます。このスクリプトでは、各APIエンドポイントを呼び出して、結果が期待通りかを確認します。
 
 **Bashスクリプトの使用方法:**
+0. WSL2を使用している場合、Ubuntuはjqがインストールされていない場合があります。以下のコマンドを使用してjqをインストールしてください：
+   ```bash
+   sudo apt-get install jq
+    ```
 1. スクリプトをダウンロードまたは作成し、`test_api.sh`という名前で保存します。
 2. 以下のコマンドで実行します：
    ```bash
