@@ -52,7 +52,7 @@ NAME             IMAGE                  COMMAND                  SERVICE   CREAT
         PASSWORD: 2025winter
       ```
 ### 3.1.B. dockerコンテナ内で接続する場合
--    **`app`コンテナに接続:** `docker exec -it app bash`を使って`app`コンテナに接続します。
+-    **`app`コンテナに接続:** `docker compose exec db bash`を使って`app`コンテナに接続します。
 -   **`psql`コマンド:** `psql -U prtimes -d 2025winterhackathon`を使って、PostgreSQLデータベースに接続します。
 
 ### 3.2 テーブルの作成
