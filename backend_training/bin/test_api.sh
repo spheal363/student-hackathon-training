@@ -20,10 +20,10 @@ test_get_all_todos() {
     body=$(echo "$response" | sed '$d')  # This removes the last line (the status code)
 
     if [ "$status_code" -eq 200 ] && is_json "$body"; then
-        echo "✅ Passed"
+        echo "Status: $status_code ✅ Passed"
         echo "Response: $body"
     else
-        echo "❌ Failed"
+        echo "Status: $status_code ❌ Failed (Expected 200)"
         echo "Response: $body"
     fi
     echo ""  # New line after test case
@@ -37,10 +37,10 @@ test_get_todo_by_id() {
     body=$(echo "$response" | sed '$d')  # This removes the last line (the status code)
 
     if [ "$status_code" -eq 200 ] && is_json "$body" && check_json_structure "$body"; then
-        echo "✅ Passed"
+        echo "Status: $status_code ✅ Passed"
         echo "Response: $body"
     else
-        echo "❌ Failed"
+        echo "Status: $status_code ❌ Failed (Expected 200)"
         echo "Response: $body"
     fi
     echo ""  # New line after test case
@@ -54,10 +54,10 @@ test_get_todo_not_found() {
     body=$(echo "$response" | sed '$d')  # This removes the last line (the status code)
 
     if [ "$status_code" -eq 404 ] && is_json "$body"; then
-        echo "✅ Passed"
+        echo "Status: $status_code ✅ Passed"
         echo "Response: $body"
     else
-        echo "❌ Failed"
+        echo "Status: $status_code ❌ Failed (Expected 404)"
         echo "Response: $body"
     fi
     echo ""  # New line after test case
@@ -71,10 +71,10 @@ test_post_todo() {
     body=$(echo "$response" | sed '$d')  # This removes the last line (the status code)
 
     if [ "$status_code" -eq 201 ] && is_json "$body" && check_json_structure "$body"; then
-        echo "✅ Passed"
+        echo "Status: $status_code ✅ Passed"
         echo "Response: $body"
     else
-        echo "❌ Failed"
+        echo "Status: $status_code ❌ Failed (Expected 201)"
         echo "Response: $body"
     fi
     echo ""  # New line after test case
@@ -88,10 +88,10 @@ test_put_todo() {
     body=$(echo "$response" | sed '$d')  # This removes the last line (the status code)
 
     if [ "$status_code" -eq 200 ] && is_json "$body" && check_json_structure "$body"; then
-        echo "✅ Passed"
+        echo "Status: $status_code ✅ Passed"
         echo "Response: $body"
     else
-        echo "❌ Failed"
+        echo "Status: $status_code ❌ Failed (Expected 200)"
         echo "Response: $body"
     fi
     echo ""  # New line after test case
@@ -105,10 +105,10 @@ test_delete_todo() {
     body=$(echo "$response" | sed '$d')  # This removes the last line (the status code)
 
     if [ "$status_code" -eq 200 ] && is_json "$body" && check_json_structure "$body"; then
-        echo "✅ Passed"
+        echo "Status: $status_code ✅ Passed"
         echo "Response: $body"
     else
-        echo "❌ Failed"
+        echo "Status: $status_code ❌ Failed (Expected 200)"
         echo "Response: $body"
     fi
     echo ""  # New line after test case
@@ -122,10 +122,10 @@ test_get_server_error() {
     body=$(echo "$response" | sed '$d')  # This removes the last line (the status code)
 
     if [ "$status_code" -eq 500 ] && is_json "$body"; then
-        echo "✅ Passed"
+        echo "Status: $status_code ✅ Passed"
         echo "Response: $body"
     else
-        echo "❌ Failed"
+        echo "Status: $status_code ❌ Failed (Expected 500)"
         echo "Response: $body"
     fi
     echo ""  # New line after test case
