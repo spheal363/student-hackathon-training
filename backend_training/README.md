@@ -198,18 +198,21 @@ SELECT * FROM todos;
 **Bashスクリプトの使用方法:**
 <br/>
 0. WSL2を使用している場合、Ubuntuはjqがインストールされていない場合があります。以下のコマンドを使用してjqをインストールしてください：
+
    ```bash
    sudo apt-get install jq
     ```
    
 1. スクリプトをダウンロードまたは作成し、`test_api.sh`という名前で保存します。
 2. 以下のコマンドで実行します：
+
    ```bash
    bash test_api.sh
     ```
    
 3. スクリプトが実行されると、各APIエンドポイントのテスト結果が表示されます。
 テストのオプションは、個別のエンドポイントを選択して実行するか、「Run All Tests」を選んで全てのテストを一度に実行できます。
+
    ```bash
    bash bin/test_api.sh
    1) Test GET /todos              6) Test DELETE /todos?id=1
