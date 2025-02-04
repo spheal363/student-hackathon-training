@@ -208,7 +208,7 @@ SELECT * FROM todos;
 2. 以下のコマンドで実行します：
 
    ```bash
-   bash test_api.sh
+   bash bin/test_api.sh
     ```
    
 3. スクリプトが実行されると、各APIエンドポイントのテスト結果が表示されます。
