@@ -196,15 +196,18 @@ SELECT * FROM todos;
 テストを簡単に行いたい場合、以下のBashスクリプトを使用して、APIエンドポイントを自動的にテストできます。このスクリプトでは、各APIエンドポイントを呼び出して、結果が期待通りかを確認します。
 
 **Bashスクリプトの使用方法:**
+<br/>
 0. WSL2を使用している場合、Ubuntuはjqがインストールされていない場合があります。以下のコマンドを使用してjqをインストールしてください：
    ```bash
    sudo apt-get install jq
     ```
+   
 1. スクリプトをダウンロードまたは作成し、`test_api.sh`という名前で保存します。
 2. 以下のコマンドで実行します：
    ```bash
    bash test_api.sh
     ```
+   
 3. スクリプトが実行されると、各APIエンドポイントのテスト結果が表示されます。
 テストのオプションは、個別のエンドポイントを選択して実行するか、「Run All Tests」を選んで全てのテストを一度に実行できます。
    ```bash
@@ -215,6 +218,7 @@ SELECT * FROM todos;
    4) Test POST /todos             9) Exit
    5) Test PUT /todos?id=1
    ```
+   
 4. テスト実行の確認: スクリプトが正しく実行されると、各APIエンドポイントの結果がターミナルに表示されます。成功した場合は「✅ Passed」と表示され、失敗した場合は「❌ Failed」と表示されます。
    ```bash
      Testing GET /todos (Retrieve all Todos)
