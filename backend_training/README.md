@@ -18,7 +18,7 @@ graph LR
     A -- 応答 --> N
 ```
 
-0. **(Mac/Linuxユーザーはスキップ) Windowsユーザー向けのWSL2追加設定 :** Windows Subsystem for Linux 2 (WSL2)を有効にしてください。([WSL2の有効化](https://docs.microsoft.com/en-us/windows/wsl/install). 参考：[Docker Desktop for Windows with WSL2](https://docs.docker.com/desktop/windows/wsl/))
+0. **(Mac/Linuxユーザーはスキップ) Windowsユーザー向けのWSL2追加設定 :** Windows Subsystem for Linux 2 (WSL2)を有効にしてください。参考：[WSL2の有効化](https://docs.microsoft.com/en-us/windows/wsl/install) , [Docker Desktop for Windows with WSL2](https://docs.docker.com/desktop/windows/wsl/)
 1. **Dockerのインストール:** Dockerがインストールされ、実行されていること。([Docker Get Started](https://www.docker.com/get-started/))
 2. **Docker Composeのインストール:** Docker Composeがインストールされていること。([Docker Compose Install](https://docs.docker.com/compose/install/))
 3. **コードエディタ/IDEのインストール:** テキストエディタまたはIDE（例: VS Code）がインストールされていること。
