@@ -22,13 +22,13 @@ graph LR
 1. **Dockerのインストール:** Dockerがインストールされ、実行されていること。([Docker Get Started](https://www.docker.com/get-started/))
 2. **Docker Composeのインストール:** Docker Composeがインストールされていること。([Docker Compose Install](https://docs.docker.com/compose/install/))
 3. **コードエディタ/IDEのインストール:** テキストエディタまたはIDE（例: VS Code）がインストールされていること。
-4. **プロジェクトへの移動:** ターミナルを開き、`cd backend_tranning/`を使ってプロジェクトのルートディレクトリに移動してください。
+4. **プロジェクトへの移動:** ターミナルを開き、`cd backend_training/`を使ってプロジェクトのルートディレクトリに移動してください。
 5. **プロジェクトファイル:** `compose.yml`、`app/Dockerfile`、`app/src/`、および`nginx/default.conf`ファイルがあることを確認してください。
 
-## 2. Docker Composeの設定
+## 2. Dockerコンテナの起動
 
 -    **Dockerコンテナの起動:** `docker compose up -d`コマンドを実行してコンテナを起動します。 
-- `docker ps`またはDocker Desktopを使って、以下のコンテナが正常に起動していることを確認してください：
+- `docker compose ps`またはDocker Desktopを使って、以下のコンテナが正常に起動していることを確認してください：
 ```bash
 docker compose ps
 NAME             IMAGE                  COMMAND                  SERVICE   CREATED      STATUS                  PORTS
@@ -40,17 +40,16 @@ NAME             IMAGE                  COMMAND                  SERVICE   CREAT
 
 ## 3. データベースの設定
 ### 3.1.A. データベースクライアントで接続する場合
--    **データベースクライアント:** PostgreSQLデータベースクライアント（`pgAdmin`、`DBeaver`など）がインストールされていること。
--    **データベースへの接続:** `compose.yml`ファイルにある以下の接続情報を使って、PostgreSQLデータベースに正常に接続します。
-      ```sql
-        DATABASE: 2025winterhackathon
-        PORT: 5432
-        USERNAME: prtimes
-        PASSWORD: 2025winter
-      ```
-### 3.1.B. dockerコンテナ内で接続する場合
--    **`app`コンテナに接続:** `docker compose exec db bash`を使って`app`コンテナに接続します。
--   **`psql`コマンド:** `psql -U prtimes -d 2025winterhackathon`を使って、PostgreSQLデータベースに接続します。
+- **データベースクライアント:** PostgreSQLデータベースクライアント（`pgAdmin`、`DBeaver`など）がインストールされていること。
+- **データベースへの接続:** `compose.yml`ファイルにある以下の接続情報を使って、PostgreSQLデータベースに正常に接続します。
+  - HOST: localhost
+  - DATABASE: 2025winterhackathon
+  - PORT: 5432
+  - USERNAME: prtimes
+  - PASSWORD: 2025winter
+### 3.1.B. CLIで接続する場合
+- **`db`コンテナに接続:** `docker compose exec db bash`を使って`db`コンテナに接続します。
+- **`psql`コマンド:** `psql -U prtimes -d 2025winterhackathon`を使って、PostgreSQLデータベースに接続します。
 
 ### 3.2 テーブルの作成
 TODOリストアプリのデータベーススキーマを設計し、必要なテーブルを作成します。 以下のデータベース設計をもとに、todos テーブルと statuses テーブルを作成してください。
@@ -77,9 +76,9 @@ erDiagram
 - リレーション: todos の status_id は、statuses の id を参照します (外部キー制約)。
 
 <details>
-  <summary>CREATE SQL</summary>
+  <summary>実行例</summary>
 
-以下のSQLクエリを使用して、statuses と todos の2つのテーブルを作成してください。
+3.1.B. CLIで接続する場合を参考にPostgreSQLデータベースに接続後、以下のSQLクエリを実行してstatuses と todos の2つのテーブルを作成してください。
 <br/>`statuses`テーブルの作成：
 ```sql
 CREATE TABLE statuses (
@@ -117,32 +116,37 @@ INSERT INTO todos (title, status_id) VALUES
 ```
 
 ### 3.4 データの確認
-**SQLクエリの実行:** 以下のSQLクエリを実行して、`todos`テーブルのデータを確認します。ステップ3.3で挿入したデータが表示されることを確認してください。
+**SQLクエリの実行:** 以下のSQLクエリを実行して、`todos`テーブルと`statuses`のデータを確認します。ステップ3.3で挿入したデータが表示されることを確認してください。
 ```sql
-SELECT * FROM todos;
+SELECT todos.id, todos.title, statuses.name
+FROM todos 
+  JOIN statuses 
+    ON todos.status_id = statuses.id;
 ```
 以下のような結果が表示されると、OKです。
 ```bash
-  id | title  | status
------+--------+---------
-   1 | Todo 1 | pending
-   2 | Todo 2 | completed
-   3 | Todo 3 | pending
-   4 | Todo 4 | active
+ id | title  |   name    
+----+--------+-----------
+  1 | Todo 1 | pending
+  2 | Todo 2 | completed
+  3 | Todo 3 | pending
+  4 | Todo 4 | active
+
 (4 rows)
 ```
 
 ## 4. PHP API の開発
 
 1. **`config.php`の作成:**  
-   `php/src`ディレクトリに、データベース接続設定を含む`config.php`ファイルを作成します。
+   `app/src`ディレクトリに、データベース接続設定を含む`config.php`ファイルを作成します。 （今回はサンプルとして作成済みです）
 
 2. **`index.php`の作成:**  
-   同じディレクトリに`index.php`ファイルを作成し、`/todos`エンドポイントを実装します。 
-   <br>PIエンドポイントの実装には、すべてのコードを1つのファイルに書く必要はありません。できるだけコードをモジュール化し、各機能を異なるファイルに分けて実装することをお勧めします（例えば、TodoクラスやDatabaseクラスなど）。
-   <br><br>以下の機能を追加してください：
+   同じディレクトリに`index.php`ファイルを作成し、`/todos`エンドポイントを実装します。 （今回はサンプルとして作成済みです）
+   <br>APIエンドポイントの実装には、すべてのコードを1つのファイルに書く必要はありません。できるだけコードをモジュール化し、各機能を異なるファイルに分けて実装することをお勧めします（例えば、TodoクラスやDatabaseクラスなど）。
+   <br><br>以下のJSON APIのエンドポイントをそれぞれ実装してください：
 
     - **GET `/todos`（全てのTodoを取得）:**
+        - サンプルとして実装済みです
         - 成功時: HTTPステータスコード`200`で全てのTodoをJSON形式で返します。Todoが存在しない場合、空の配列`[]`を返します。
           - 例：<br> 
             ```json
@@ -178,13 +182,6 @@ SELECT * FROM todos;
         - 成功時: HTTPステータスコード`200`で削除されたTodoをJSON形式で返します。
         - IDが見つからない場合: HTTPステータスコード`404`でエラーメッセージを返します。
         - エラー時: HTTPステータスコード`500`でエラーメッセージを返します。
-
-3. **アプリコンテナの再起動:**  
-   エンドポイントを実装した後、以下のコマンドを実行してアプリコンテナを再起動します：
-   ```bash
-   docker compose restart app
-    ```
-
 
 ## 5. APIのテスト
 
@@ -243,7 +240,7 @@ SELECT * FROM todos;
       ```json
       {"title": "テストTodo"}
       ```
-    - 新しいTodoがデータベースに正しく作成され、タイトルが期待通りであることを確認します。
+    - 新しいTodoレコードがデータベースに正しく作成され、タイトルが期待通りであることを確認します。
 
 3. **GET /todos?id={id} (特定のTodoを取得):**
     - `GET`メソッドを使用して `http://localhost/todos?id={id}` にリクエストを送り、`{id}` を作成したTodoのIDに置き換えます。
@@ -261,17 +258,6 @@ SELECT * FROM todos;
 をテストできます。  
 APIクライアントを使用すると、リクエストとレスポンスを可視化し、デバッグも簡単に行えます。どのAPIクライアントでも、必要に応じてリクエストを作成し、APIの動作を確認できます。
 
-
-## 6. 開発と反復
-
--    **PHPコードの変更:** `app/src`ディレクトリ内のファイルを編集します。
--    **コンテナの再起動:** `docker compose restart app`を使用して、PHPコードを変更した後にコンテナを再起動します。
--    **APIの再テスト:** 変更ごとにAPIクライアントを使用してエンドポイントを再テストします。
-
-## 7. クリーンアップ
--   **コンテナの停止:** `docker compose stop`コマンドを実行してコンテナを停止します。
--   **コンテナの削除:** `docker compose down -v`コマンドを実行してコンテナを削除します。
-
 ## おめでとうございます！
-
-Todoリストアプリのチュートリアルを正常に完了しました！ メインのチュートリアルページにある「さらに探索」セクションを自由に探索して、アプリをさらに改善してください。
+5のAPIエンドポイントを全て実装してテストが通ることを確認できたら、バックエンド課題は完了です！  
+フロントエンド課題で作成した画面とのつなぎ込みや作成したコードのリファクタリングなどにもチャレンジしてみましょう。
