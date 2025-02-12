@@ -117,8 +117,6 @@ https://github.com/user-attachments/assets/425a3106-7522-411b-b383-e136b9f6ec9b
 - 追加されたTODOを保持し一覧で表示するためにStateを使います
 - 追加ボタンを押した際に入力欄で入力されているTODOをStateにセットします
 
-**>>>>>>>>>>>TODO<<<<<<<< 解説:**
-
 ### 3️⃣ リストで表示しているTODOを完了できるようにする
 
 **タスク:**
@@ -148,7 +146,3 @@ https://github.com/user-attachments/assets/be9bd46f-7731-4007-94a1-aa906a474ff4
 - isEditがtrueのTODOの時にTODO編集用のコンポーネントを表示するようにします
 - 可読性のために編集用のコンポーネントを別のコンポーネントに切り出します
 - isEditで編集用の入力欄で入力値を保持するために新規で編集用のStateを作成します
-
-
-### TODOリストの内容をバックエンドに保存する
-
