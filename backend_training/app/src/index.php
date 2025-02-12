@@ -86,11 +86,11 @@ function handleGetTodos(PDO $pdo): void
 {
     try {
         // データベースからTodoリストを取得
-        $stmt = $pdo->query("SELECT * FROM todos ORDER BY id DESC");
+        $stmt = $pdo->query("SELECT todos.id, todos.title, statuses.name FROM todos JOIN statuses ON todos.status_id = statuses.id;");
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // レスポンスを返却
-        echo json_encode(['status' => 'ok', 'todos' => $result]);
+        echo json_encode(['status' => 'ok', 'data' => $result]);
     } catch (Exception $e) {
         // クエリエラー時のレスポンス
         http_response_code(500);
