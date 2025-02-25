@@ -305,7 +305,7 @@ function handlePutTodoById(PDO $pdo, int $id): void
         http_response_code(200);
         echo json_encode([
             'status' => 'ok',
-            'todo' => $updatedTodo
+            'todos' => $updatedTodo
         ], JSON_UNESCAPED_UNICODE);
     } catch (Exception $e) {
         $pdo->rollBack(); // 失敗時にロールバック
@@ -356,7 +356,7 @@ function handleDeleteTodoById(PDO $pdo, int $id): void
             http_response_code(200);
             echo json_encode([
                 'status' => 'ok',
-                'deleted_todo' => $todo // 削除前のデータを返す
+                'todos' => $todo // 削除前のデータを返す
             ], JSON_UNESCAPED_UNICODE);
         } else {
             // 予期しないエラー（通常は発生しないが念のため）
